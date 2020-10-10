@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +22,7 @@ public class MyFrame extends JFrame {
             setDefaultCloseOperation(EXIT_ON_CLOSE);
             Container container = getContentPane();
             JPanel panel1 = new JPanel();
+            panel1.setLayout(new FlowLayout());
             container.add(panel1);
             container.setLayout(new GridLayout(0,1));
 
@@ -47,7 +50,11 @@ public class MyFrame extends JFrame {
             panel1.add(addButton);
             panel1.setLayout(new FlowLayout());
 
-            JLabel title2 = new JLabel("근무일지");
+            JPanel p2_1 =new JPanel();
+            JPanel p2_2 = new JPanel();
+            JPanel p2_3 = new JPanel();
+            p2_3.setLayout(new GridLayout(0,1));
+            JLabel title2 = new JLabel("사고인원");
             JLabel title3 = new JLabel("제외 인원");
             //panel2
             JPanel panel2 = new JPanel();
@@ -55,9 +62,9 @@ public class MyFrame extends JFrame {
 
             JLabel title4 = new JLabel("외출/격리복귀");
             panel2.add(title2);
-            panel2.add(title3);
+            p2_1.add(title3);
 
-            panel2.setLayout(new GridLayout(0,1));
+            panel2.setLayout(new FlowLayout());
             // checkbox
             JPanel radiopanel1 = new JPanel();
             radiopanel1.setLayout(new FlowLayout());
@@ -71,8 +78,9 @@ public class MyFrame extends JFrame {
                 radiopanel1.add(excludeCheckBox.get(i));
             }
 
-            panel2.add(radiopanel1);
-            panel2.add(title4);
+            p2_1.add(radiopanel1);
+
+            p2_2.add(title4);
             ArrayList<JCheckBox> returnCheckBox = new ArrayList<>();
             JPanel radiopanel2 = new JPanel();
             //JCheckBox []returnCheckBox;
@@ -83,8 +91,11 @@ public class MyFrame extends JFrame {
                 //returnCheckBox[i] = new JCheckBox(members.getElementAt(i));
                 radiopanel2.add(returnCheckBox.get(i));
             }
-            panel2.add(radiopanel2);
+            p2_2.add(radiopanel2);
 
+            p2_3.add(p2_1);
+            p2_3.add(p2_2);
+            panel2.add(p2_3);
 
             addButton.addActionListener(new ActionListener() {
 
@@ -102,10 +113,15 @@ public class MyFrame extends JFrame {
                     addMemberField.setText("");//추가후에, 텍스트필드에 남아있는 값 지워주기.
                 }
             });
+
+
+
             // panel3 : 근무일지 표
 
             JPanel panel3 = new JPanel();
-            panel3.setLayout(new GridLayout(0,1));
+            JPanel p3_1 = new JPanel();
+            p3_1.setLayout(new GridLayout(0,1));
+            panel3.setLayout(new FlowLayout());
             JLabel p3_t1 = new JLabel("근무 시간 입력");
             panel3.add(p3_t1);
             JPanel workpanel1 = new JPanel();
@@ -117,7 +133,7 @@ public class MyFrame extends JFrame {
                 work1[i] = new JTextField(Integer.toString(i),2);
                 workpanel1.add(work1[i]);
             }
-            panel3.add(workpanel1);
+            p3_1.add(workpanel1);
 
             JPanel workpanel2 = new JPanel();
             workpanel2.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -136,11 +152,27 @@ public class MyFrame extends JFrame {
                 if(!exist) work2[i].setText("X");
                 workpanel2.add(work2[i]);
             }
-            panel3.add(workpanel2);
-
+            p3_1.add(workpanel2);
+            panel3.add(p3_1);
 
             container.add(panel3);
+            panel1.setPreferredSize(new Dimension(1000,100));
+            panel2.setPreferredSize(new Dimension(1000,100));
+            panel3.setPreferredSize(new Dimension(1000,100));
+
+            panel1.setBorder(new TitledBorder(new LineBorder(Color.black,3)));
+            panel2.setBorder(new TitledBorder(new LineBorder(Color.black,3)));
+            panel3.setBorder(new TitledBorder(new LineBorder(Color.black,3)));
+            title1.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            title2.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            title3.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            title4.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            workpanel1.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            workpanel2.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            p2_1.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
+            p2_2.setBorder(new TitledBorder(new LineBorder(Color.black,1)));
             setVisible(true);
+
 
 
         }
