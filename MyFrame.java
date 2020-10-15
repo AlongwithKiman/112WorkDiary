@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,11 +13,46 @@ import java.util.jar.JarEntry;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 public class MyFrame extends JFrame {
+    public class JTextFieldLimit extends PlainDocument
+    {
+        private static final long serialVersionUID = 1L;
+
+        private int     limit;
+
+        // optional uppercase conversion
+        private boolean toUppercase = false;
+
+        JTextFieldLimit(int limit)
+        {
+            super();
+            this.limit = limit;
+        }
+
+        JTextFieldLimit(int limit, boolean upper)
+        {
+            super();
+            this.limit = limit;
+            toUppercase = upper;
+        }
+
+        public void insertString(int offset, String str, javax.swing.text.AttributeSet attr) throws BadLocationException
+        {
+            if (str == null) return;
+
+            if ((getLength() + str.length()) <= limit)
+            {
+                if (toUppercase) str = str.toUpperCase();
+
+                super.insertString(offset, str, attr);
+            }
+        }
+    }
     MyFrame()
         {
-            int workhour = 24;
-            int []person2hour ={9,15,16,17,18,19,20,21,22,23};
 
+            int workhour = 24;
+            int []person2hour ={9,15,16,17,18,19,20,21,22,23};  // 2인 근무 시간 idx
+            int []noReturn = {0,1,2,3,4,5,6,7,8,9,10,11};       // 복귀자가 들어가면 안 되는 시간 idx
 
             setTitle("첫번째 프레임");
             setSize(1000,1200);
@@ -124,6 +161,19 @@ public class MyFrame extends JFrame {
             panel3.setLayout(new FlowLayout());
             JLabel p3_t1 = new JLabel("근무 시간 입력");
             panel3.add(p3_t1);
+            JPanel hours = new JPanel();
+            JLabel []hour;
+            hour = new JLabel[workhour];
+            for(int i=0;i<workhour;i++)
+            {
+
+
+                hour[i] = new JLabel(String.format("%02d", (i+9)%24),JLabel.CENTER);
+                hour[i].setPreferredSize(new Dimension(26,10));
+                hours.add(hour[i]);
+            }
+            p3_1.add(hours);
+
             JPanel workpanel1 = new JPanel();
             workpanel1.setLayout(new FlowLayout(FlowLayout.LEFT));
             JTextField []work1;
@@ -149,13 +199,64 @@ public class MyFrame extends JFrame {
                         break;
                     }
                 }
-                if(!exist) work2[i].setText("X");
+                if(!exist) work2[i].setDocument(new JTextFieldLimit(0));
                 workpanel2.add(work2[i]);
             }
             p3_1.add(workpanel2);
             panel3.add(p3_1);
 
+
+            // 알림창
+            JPanel panel4 = new JPanel();
+            JButton checkButton = new JButton("Check");
+            panel4.add(checkButton);
+
+
+            JTextArea warning = new JTextArea(10,30);
+
+            checkButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+
+                    ArrayList<String> excludes = new ArrayList<>();
+                    ArrayList<String> returns = new ArrayList<>();
+                    warning.setText(null);
+                    for(int i=0;i<members.size();i++)
+                    {
+                        if(excludeCheckBox.get(i).isSelected()) excludes.add(excludeCheckBox.get(i).getText());
+                        if(returnCheckBox.get(i).isSelected()) returns.add(returnCheckBox.get(i).getText());
+                    }
+
+                    System.out.println(excludes);
+                    for(String member : excludes)
+                    {
+                        // 근무일지 모든 시간대에 들어가면 알림메세지
+                        for(int i=0;i<workhour;i++)
+                        {
+                            if(work1[i].getText().equals(member) || work2[i].getText().equals(member))
+                            {
+                                warning.append(member+"번이 "+ (i + 9) % 24 +"시에 있습니다.\n");
+                            }
+                        }
+                    }
+                    for(String member : returns)
+                    {
+                        for(int i : noReturn)
+                        {
+                            if(work1[i].getText().equals(member) || work2[i].getText().equals(member))
+                            {
+                                warning.append(member+"번이 "+ (i + 9) % 24 +"시에 있습니다.\n");
+                            }
+                        }
+                    }
+                }
+            });
+
+            panel4.add(warning);
             container.add(panel3);
+            container.add(panel4);
             panel1.setPreferredSize(new Dimension(1000,100));
             panel2.setPreferredSize(new Dimension(1000,100));
             panel3.setPreferredSize(new Dimension(1000,100));
